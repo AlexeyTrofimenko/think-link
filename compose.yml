@@ -1,0 +1,10 @@
+name: think-link
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    command: sleep infinity
+    volumes:
+      - .:/app
