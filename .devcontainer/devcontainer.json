@@ -2,5 +2,8 @@
   "name": "think-link",
   "dockerComposeFile": ["../compose.yml"],
   "service": "api",
-  "workspaceFolder": "/app"
+  "workspaceFolder": "/app",
+  "containerEnv": {
+    "UV_LINK_MODE": "copy"
+  }
 }
