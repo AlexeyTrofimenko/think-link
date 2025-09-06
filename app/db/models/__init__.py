@@ -1,7 +1,6 @@
 from .base import Base
 from .note import Note
-from .tag import Tag
 from .note_tag import NoteTag
+from .tag import Tag
 
 __all__ = ["Base", "Note", "Tag", "NoteTag"]
-

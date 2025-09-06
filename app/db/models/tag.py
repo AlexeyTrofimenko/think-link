@@ -1,7 +1,9 @@
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from .base import Base
 from .mixins import TimestampMixin
+
 
 class Tag(TimestampMixin, Base):
     __tablename__ = "tags"

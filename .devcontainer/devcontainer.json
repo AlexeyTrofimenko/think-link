@@ -7,11 +7,20 @@
     "UV_LINK_MODE": "copy"
   },
   "customizations": {
-        "vscode": {
-            "extensions": [
-                "ms-python.vscode-pylance",
-                "ms-python.python"
-            ]
-        }
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff",
+        "ms-python.mypy-type-checker",
+        "editorconfig.editorconfig"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "[python]": { "editor.defaultFormatter": "charliermarsh.ruff" },
+        "ruff.fixAll": true,
+        "ruff.organizeImports": true
+      }
     }
+  }
 }

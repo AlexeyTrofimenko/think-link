@@ -1,6 +1,8 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
+
 from .base import Base
+
 
 class NoteTag(Base):
     __tablename__ = "note_tags"

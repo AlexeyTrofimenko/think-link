@@ -1,8 +1,9 @@
-from sqlalchemy import String, Text, Boolean
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from .base import Base
 from .mixins import TimestampMixin
+
 
 class Note(TimestampMixin, Base):
     __tablename__ = "notes"

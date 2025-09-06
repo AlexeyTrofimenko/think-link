@@ -1,5 +1,6 @@
-# Python cache
+# Python
 __pycache__/
+.venv/
 
 # UV
 uv.lock
@@ -10,3 +11,8 @@ docker/secrets/
 
 # Alembic Migrations
 migration/
+
+# Linters
+.mypy_cache/
+.ruff_cache/
+.githooks/
