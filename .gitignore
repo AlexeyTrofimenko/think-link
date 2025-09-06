@@ -3,3 +3,10 @@ __pycache__/
 
 # UV
 uv.lock
+
+# Secrets
+docker/secrets/
+.envs/
+
+# Alembic Migrations
+migration/
