@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Boolean
+from sqlalchemy import Boolean, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -19,7 +19,7 @@ class Note(TimestampMixin, Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     title: Mapped[str]
     content: Mapped[str | None]
-    is_archived: Mapped[bool] = mapped_column(Boolean, server_default="false")
+    is_archived: Mapped[bool] = mapped_column(Boolean, server_default=text("false"))
 
     tags: Mapped[list[Tag]] = relationship(
         secondary=note_tags,
