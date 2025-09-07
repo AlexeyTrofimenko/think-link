@@ -1,8 +1,16 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from sqlalchemy import Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
 from .mixins import TimestampMixin
+from .note_tag import note_tags
+
+if TYPE_CHECKING:
+    from .tag import Tag
 
 
 class Note(TimestampMixin, Base):
@@ -13,9 +21,8 @@ class Note(TimestampMixin, Base):
     content: Mapped[str | None]
     is_archived: Mapped[bool] = mapped_column(Boolean, server_default="false")
 
-    tags = relationship(
-        "Tag",
-        secondary="note_tags",
+    tags: Mapped[list[Tag]] = relationship(
+        secondary=note_tags,
         back_populates="notes",
         lazy="selectin",
         passive_deletes=True,
