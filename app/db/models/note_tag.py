@@ -1,17 +1,10 @@
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import Column, ForeignKey, Table
 
-from .base import Base
+from app.db.models.base import Base
 
-
-class NoteTag(Base):
-    __tablename__ = "note_tags"
-
-    note_id: Mapped[int] = mapped_column(
-        ForeignKey("notes.id", ondelete="CASCADE"),
-        primary_key=True,
-    )
-    tag_id: Mapped[int] = mapped_column(
-        ForeignKey("tags.id", ondelete="CASCADE"),
-        primary_key=True,
-    )
+note_tags = Table(
+    "note_tags",
+    Base.metadata,
+    Column("note_id", ForeignKey("notes.id", ondelete="CASCADE"), primary_key=True),
+    Column("tag_id", ForeignKey("tags.id", ondelete="CASCADE"), primary_key=True),
+)

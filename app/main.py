@@ -1,7 +1,11 @@
 from fastapi import FastAPI
 
-from .api import router as api_router
+from app.routers.health import router as health_router
+from app.routers.notes import router as note_router
+from app.routers.tags import router as tag_router
 
 app = FastAPI(title="ThinkLink")
 
-app.include_router(api_router)
+app.include_router(health_router)
+app.include_router(note_router)
+app.include_router(tag_router)
