@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -15,13 +15,12 @@ router = APIRouter(prefix="/tags", tags=["tags"])
 async def create_tag(
     payload: TagCreateSchema, session: Annotated[AsyncSession, Depends(get_session)]
 ) -> TagReadSchema:
-    existing = await session.scalar(select(Tag).where(Tag.name == payload.name))
-    if existing:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Tag already exists")
-
-    tag = Tag(name=payload.name)
-
     async with session.begin():
+        existing = await session.scalar(select(Tag).where(Tag.name == payload.name))
+        if existing:
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Tag already exists")
+
+        tag = Tag(name=payload.name)
         session.add(tag)
 
     await session.refresh(tag)
@@ -45,10 +44,12 @@ async def get_tag(
 
 
 @router.delete("/{tag_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_tag(tag_id: int, session: Annotated[AsyncSession, Depends(get_session)]) -> None:
-    tag = await session.scalar(select(Tag).where(Tag.id == tag_id))
-    if not tag:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tag not found")
+async def delete_tag(
+    tag_id: int, session: Annotated[AsyncSession, Depends(get_session)]
+) -> Response:
     async with session.begin():
+        tag = await session.scalar(select(Tag).where(Tag.id == tag_id))
+        if not tag:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tag not found")
         await session.delete(tag)
-    return None
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

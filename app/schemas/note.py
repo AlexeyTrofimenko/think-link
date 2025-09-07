@@ -13,7 +13,7 @@ class NoteCreateSchema(BaseModel):
     tags_ids: list[int] = []
 
 
-class NoteReadSchema(NoteCreateSchema):
+class NoteReadSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
