@@ -16,3 +16,6 @@ migration/
 .mypy_cache/
 .ruff_cache/
 .githooks/
+
+# Tests
+tests/test.db
