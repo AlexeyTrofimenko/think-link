@@ -29,4 +29,4 @@ class NoteUpdateSchema(BaseModel):
     title: str | None = Field(default=None, max_length=200)
     content: str | None = None
     is_archived: bool | None = None
-    tag_ids: list[int] | None = None
+    tags_ids: list[int] | None = None

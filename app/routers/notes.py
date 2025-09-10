@@ -35,7 +35,11 @@ async def create_note(
 async def list_notes(
     session: Annotated[AsyncSession, Depends(get_session)],
 ) -> list[NoteReadSchema]:
-    rows = (await session.execute(select(Note).order_by(Note.created_at.desc()))).scalars().all()
+    rows = (
+        (await session.execute(select(Note).order_by(Note.created_at.desc(), Note.id.desc())))
+        .scalars()
+        .all()
+    )
     return [NoteReadSchema.model_validate(n) for n in rows]
 
 
@@ -63,9 +67,9 @@ async def update_note(
             note.content = payload.content
         if payload.is_archived is not None:
             note.is_archived = payload.is_archived
-        if payload.tag_ids is not None:
+        if payload.tags_ids is not None:
             tags = list(
-                (await session.execute(select(Tag).where(Tag.id.in_(payload.tag_ids))))
+                (await session.execute(select(Tag).where(Tag.id.in_(payload.tags_ids))))
                 .scalars()
                 .all()
             )
