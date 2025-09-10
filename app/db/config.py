@@ -4,6 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    DATABASE_URL: str | None = None
     DB_HOST: str | None = None
     DB_PORT: int | None = None
     DB_USER: str | None = None
@@ -15,6 +16,8 @@ class Settings(BaseSettings):
 
     @property
     def database_url_asyncpg(self) -> str:
+        if self.DATABASE_URL:
+            return self.DATABASE_URL
         if not self.DB_HOST or not self.DB_PORT or not self.DB_USER or not self.DB_NAME:
             raise ValueError("Database configuration is incomplete")
         pwd = self.DB_PASS
