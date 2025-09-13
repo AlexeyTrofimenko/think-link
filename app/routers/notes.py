@@ -2,20 +2,23 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Response, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.database import get_session
 from app.db.models import Note, Tag
 from app.schemas import NoteCreateSchema, NoteReadSchema, NoteUpdateSchema
+from app.services.n8n import note_created_webhook
 
 router = APIRouter(prefix="/notes", tags=["notes"])
 
 
 @router.post("/", response_model=NoteReadSchema, status_code=status.HTTP_201_CREATED)
 async def create_note(
-    payload: NoteCreateSchema, session: Annotated[AsyncSession, Depends(get_session)]
+    payload: NoteCreateSchema,
+    session: Annotated[AsyncSession, Depends(get_session)],
+    background_tasks: BackgroundTasks,
 ) -> NoteReadSchema:
     async with session.begin():
         note = Note(title=payload.title, content=payload.content)
@@ -28,6 +31,9 @@ async def create_note(
             note.tags = tags
         session.add(note)
     await session.refresh(note)
+
+    background_tasks.add_task(note_created_webhook, note.id, note.title, note.content)
+
     return NoteReadSchema.model_validate(note)
 
 
