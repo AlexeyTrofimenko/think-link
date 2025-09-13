@@ -1,11 +1,10 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.db.dao import tags as tags_dao
 from app.db.database import get_session
-from app.db.models.tag import Tag
 from app.schemas.tag import TagCreateSchema, TagReadSchema
 
 router = APIRouter(prefix="/tags", tags=["tags"])
@@ -15,21 +14,13 @@ router = APIRouter(prefix="/tags", tags=["tags"])
 async def create_tag(
     payload: TagCreateSchema, session: Annotated[AsyncSession, Depends(get_session)]
 ) -> TagReadSchema:
-    async with session.begin():
-        existing = await session.scalar(select(Tag).where(Tag.name == payload.name))
-        if existing:
-            return TagReadSchema.model_validate(existing)
-
-        tag = Tag(name=payload.name)
-        session.add(tag)
-
-    await session.refresh(tag)
+    tag = await tags_dao.create_or_get(session, payload.name)
     return TagReadSchema.model_validate(tag)
 
 
 @router.get("/", response_model=list[TagReadSchema], status_code=status.HTTP_200_OK)
 async def list_tags(session: Annotated[AsyncSession, Depends(get_session)]) -> list[TagReadSchema]:
-    rows = (await session.execute(select(Tag).order_by(Tag.name.asc()))).scalars().all()
+    rows = await tags_dao.list_all(session)
     return [TagReadSchema.model_validate(t) for t in rows]
 
 
@@ -37,7 +28,7 @@ async def list_tags(session: Annotated[AsyncSession, Depends(get_session)]) -> l
 async def get_tag(
     tag_id: int, session: Annotated[AsyncSession, Depends(get_session)]
 ) -> TagReadSchema:
-    tag = await session.scalar(select(Tag).where(Tag.id == tag_id))
+    tag = await tags_dao.get_by_id(session, tag_id)
     if not tag:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tag not found")
     return TagReadSchema.model_validate(tag)
@@ -47,9 +38,7 @@ async def get_tag(
 async def delete_tag(
     tag_id: int, session: Annotated[AsyncSession, Depends(get_session)]
 ) -> Response:
-    async with session.begin():
-        tag = await session.scalar(select(Tag).where(Tag.id == tag_id))
-        if not tag:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tag not found")
-        await session.delete(tag)
+    ok = await tags_dao.delete_by_id(session, tag_id)
+    if not ok:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tag not found")
     return Response(status_code=status.HTTP_204_NO_CONTENT)
