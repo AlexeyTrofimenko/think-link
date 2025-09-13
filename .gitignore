@@ -19,3 +19,9 @@ migration/
 
 # Tests
 tests/test.db
+
+# Ollama
+ollama/
+
+# n8n
+n8n/
