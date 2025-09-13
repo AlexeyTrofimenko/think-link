@@ -18,7 +18,7 @@ async def create_tag(
     async with session.begin():
         existing = await session.scalar(select(Tag).where(Tag.name == payload.name))
         if existing:
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Tag already exists")
+            return TagReadSchema.model_validate(existing)
 
         tag = Tag(name=payload.name)
         session.add(tag)
