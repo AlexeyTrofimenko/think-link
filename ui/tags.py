@@ -1,4 +1,4 @@
-import requests  # type: ignore
+import requests
 import streamlit as st
 from models import TagReadSchema
 
