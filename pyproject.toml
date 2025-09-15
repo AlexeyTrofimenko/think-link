@@ -51,6 +51,7 @@ warn_unused_ignores = true
 warn_redundant_casts = true
 ignore_missing_imports = true
 disallow_any_generics = true
+allow_untyped_decorators = true
 pretty = true
 exclude = ["migration/"]
 
