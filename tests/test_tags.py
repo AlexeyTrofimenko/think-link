@@ -23,10 +23,10 @@ def test_create_tag_ok(client: TestClient) -> None:
 
 def test_create_tag_conflict(client: TestClient) -> None:
     name = unique("tag")
-    _create_tag(client, name)
+    tag = _create_tag(client, name)
     resp = client.post("/tags/", json=TagCreateSchema(name=name).model_dump(mode="json"))
-    assert resp.status_code == 409
-    assert resp.json()["detail"] == "Tag already exists"
+    assert resp.status_code == 201
+    assert resp.json()["id"] == tag["id"]
 
 
 def test_list_tags_sorted_by_name(client: TestClient) -> None:
