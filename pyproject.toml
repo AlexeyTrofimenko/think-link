@@ -4,7 +4,10 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = [
+dependencies = []
+
+[dependency-groups]
+api = [
     "alembic>=1.16.5",
     "asyncpg>=0.30.0",
     "fastapi[standard]>=0.112.1",
@@ -12,7 +15,6 @@ dependencies = [
     "sqlalchemy[asyncio]>=2.0.43",
 ]
 
-[dependency-groups]
 dev = [
     "aiosqlite>=0.21.0",
     "asgi-lifespan>=2.1.0",
@@ -22,6 +24,12 @@ dev = [
     "pytest-asyncio>=1.1.0",
     "pytest-env>=1.1.5",
     "ruff>=0.12.12",
+]
+
+ui = [
+    "pydantic>=2.11.7",
+    "requests>=2.32.5",
+    "streamlit>=1.49.1",
 ]
 
 [tool.ruff]
@@ -41,6 +49,7 @@ python_version = "3.12"
 strict = true
 warn_unused_ignores = true
 warn_redundant_casts = true
+ignore_missing_imports = true
 disallow_any_generics = true
 pretty = true
 exclude = ["migration/"]

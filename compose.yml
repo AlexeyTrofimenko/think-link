@@ -50,6 +50,21 @@ services:
     volumes:
       - ./ollama:/root/.ollama
 
+  ui:
+    build:
+      context: .
+      dockerfile: docker/ui.Dockerfile
+    working_dir: /app
+    environment:
+      API_BASE: http://api:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8501:8501"
+    depends_on:
+      api:
+        condition: service_started
+    restart: unless-stopped
 
 secrets:
   pg_password:
