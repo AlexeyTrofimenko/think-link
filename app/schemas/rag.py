@@ -14,3 +14,12 @@ class RAGSearchResultItem(BaseModel):
 
 class RAGSearchResponse(BaseModel):
     results: list[RAGSearchResultItem]
+
+
+class AskRequest(BaseModel):
+    question: str
+
+
+class AskResponse(BaseModel):
+    answer: str
+    used_note_ids: list[int]

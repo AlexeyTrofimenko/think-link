@@ -55,3 +55,32 @@ async def find_relevant_notes_by_cosine(
         rows = [item for item in rows if item.distance <= max_distance]
 
     return rows
+
+
+PROMPT_TMPL = """You are a helpful assistant.
+Use ONLY the context below if relevant.
+If the context doesn't contain the answer, say you don't know.
+
+Question:
+{q}
+
+Context (notes excerpts):
+{ctx}
+
+Answer in the user's language, be concise.
+"""
+
+
+async def answer_with_context(question: str, contexts: list[str | None]) -> str:
+    ctx = "\n\n---\n\n".join([c for c in contexts if c][:8]) or "No relevant notes."
+    prompt = PROMPT_TMPL.format(q=question, ctx=ctx)
+
+    async with httpx.AsyncClient(timeout=60) as client:
+        r = await client.post(
+            f"{ollama_settings.OLLAMA_URL}/api/generate",
+            json={"model": "gemma3:270m", "prompt": prompt, "stream": False},
+        )
+        r.raise_for_status()
+
+        answer: str = r.json()["response"]
+        return answer
