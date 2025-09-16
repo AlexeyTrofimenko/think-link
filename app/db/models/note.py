@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from pgvector.sqlalchemy import Vector
 from sqlalchemy import Boolean, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -20,6 +21,10 @@ class Note(TimestampMixin, Base):
     title: Mapped[str]
     content: Mapped[str | None]
     is_archived: Mapped[bool] = mapped_column(Boolean, server_default=text("false"))
+
+    embedding: Mapped[list[float] | None] = mapped_column(
+        Vector(768), nullable=True
+    )  # 768 nomic dimension
 
     tags: Mapped[list[Tag]] = relationship(
         secondary=note_tags,

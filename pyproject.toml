@@ -11,6 +11,7 @@ api = [
     "alembic>=1.16.5",
     "asyncpg>=0.30.0",
     "fastapi[standard]>=0.112.1",
+    "pgvector>=0.4.1",
     "pydantic-settings>=2.10.1",
     "sqlalchemy[asyncio]>=2.0.43",
 ]
@@ -35,6 +36,7 @@ ui = [
 [tool.ruff]
 target-version = "py312"
 line-length = 100
+exclude = ["migration"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -63,4 +65,5 @@ testpaths = [
 ]
 env = [
     "N8N_DISABLED=true",
+    "OLLAMA_DISABLED=true",
 ]

@@ -7,6 +7,7 @@ from app.db.dao import notes as notes_dao
 from app.db.database import get_session
 from app.schemas import NoteCreateSchema, NoteReadSchema, NoteUpdateSchema
 from app.services.n8n import note_created_webhook
+from app.services.ollama import compute_note_embedding
 
 router = APIRouter(prefix="/notes", tags=["notes"])
 
@@ -25,6 +26,7 @@ async def create_note(
     )
 
     background_tasks.add_task(note_created_webhook, note.id, note.title, note.content)
+    background_tasks.add_task(compute_note_embedding, note.id, note.content)
 
     return NoteReadSchema.model_validate(note)
 
