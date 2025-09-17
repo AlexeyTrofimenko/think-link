@@ -1,5 +1,5 @@
 from .note import NoteCreateSchema, NoteReadSchema, NoteUpdateSchema
-from .rag import RAGSearchRequest, RAGSearchResponse, RAGSearchResultItem
+from .rag import RAGSearchRequest, RAGSearchResponse
 from .tag import TagCreateSchema, TagReadSchema
 
 __all__ = [
@@ -10,5 +10,4 @@ __all__ = [
     "TagReadSchema",
     "RAGSearchRequest",
     "RAGSearchResponse",
-    "RAGSearchResultItem",
 ]
