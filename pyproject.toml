@@ -13,6 +13,7 @@ api = [
     "fastapi[standard]>=0.112.1",
     "pgvector>=0.4.1",
     "pydantic-ai>=1.0.7",
+    "pydantic-ai-slim[duckduckgo]>=1.0.7",
     "pydantic-settings>=2.10.1",
     "sqlalchemy[asyncio]>=2.0.43",
 ]

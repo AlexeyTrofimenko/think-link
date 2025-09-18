@@ -52,23 +52,23 @@ async def update(
     is_archived: bool | None = None,
     tags_ids: list[int] | None = None,
 ) -> Note | None:
-    async with session.begin():
-        res = await session.execute(
-            select(Note).options(selectinload(Note.tags)).where(Note.id == note_id)
-        )
-        note = res.scalars().first()
-        if not note:
-            return None
+    res = await session.execute(
+        select(Note).options(selectinload(Note.tags)).where(Note.id == note_id)
+    )
+    note = res.scalars().first()
+    if not note:
+        return None
 
-        if title is not None:
-            note.title = title
-        if content is not None:
-            note.content = content
-        if is_archived is not None:
-            note.is_archived = is_archived
-        if tags_ids is not None:
-            note.tags = await _load_tags(session, tags_ids)
+    if title is not None:
+        note.title = title
+    if content is not None:
+        note.content = content
+    if is_archived is not None:
+        note.is_archived = is_archived
+    if tags_ids is not None:
+        note.tags = await _load_tags(session, tags_ids)
 
+    await session.commit()
     await session.refresh(note)
     return note
 
