@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, BackgroundTasks, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.ai.note_agent import Answer as NoteAnswer
@@ -11,6 +11,8 @@ from app.ai.notes_agent import agent as notes_agent
 from app.db.dao.notes import get_by_id
 from app.db.database import get_session
 from app.schemas.agents import NoteAgentRequest, NoteAgentResponse, SelectedNoteAgentRequest
+from app.services.n8n import note_created_webhook
+from app.services.ollama import compute_note_embedding
 
 router = APIRouter(prefix="/ai", tags=["ai"])
 
@@ -19,11 +21,17 @@ router = APIRouter(prefix="/ai", tags=["ai"])
 async def rag_ask(
     payload: NoteAgentRequest,
     session: Annotated[AsyncSession, Depends(get_session)],
+    background_tasks: BackgroundTasks,
 ) -> NoteAgentResponse:
     deps = DBDeps(session=session)
     result = await notes_agent.run(payload.message, deps=deps)
 
     if isinstance(result.output, CreatedNote):
+        note = await get_by_id(session, result.output.note_id)
+
+        background_tasks.add_task(note_created_webhook, note.id, note.title, note.content)
+        background_tasks.add_task(compute_note_embedding, note.id, note.content)
+
         return NoteAgentResponse(note_id=result.output.note_id)
     elif isinstance(result.output, Answer):
         return NoteAgentResponse(answer=result.output.answer)
@@ -34,6 +42,7 @@ async def rag_ask(
 async def note_ask(
     payload: SelectedNoteAgentRequest,
     session: Annotated[AsyncSession, Depends(get_session)],
+    background_tasks: BackgroundTasks,
 ) -> NoteAgentResponse:
     note = await get_by_id(session, payload.note_id)
 
@@ -51,6 +60,9 @@ async def note_ask(
     result = await note_agent.run(composed_message, deps=deps)
 
     if isinstance(result.output, UpdatedNote):
+        background_tasks.add_task(note_created_webhook, note.id, note.title, note.content)
+        background_tasks.add_task(compute_note_embedding, note.id, note.content)
+
         return NoteAgentResponse(note_id=result.output.note_id)
     elif isinstance(result.output, NoteAnswer):
         return NoteAgentResponse(answer=result.output.answer)

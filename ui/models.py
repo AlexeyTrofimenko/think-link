@@ -22,3 +22,17 @@ class NoteReadSchema(BaseModel):
     created_at: datetime
     updated_at: datetime
     tags: list[TagReadSchema] = []
+
+
+class NoteAgentRequest(BaseModel):
+    message: str
+
+
+class NoteAgentResponse(BaseModel):
+    answer: str | None = None
+    note_id: int | None = None
+
+
+class SelectedNoteAgentRequest(BaseModel):
+    note_id: int
+    message: str
